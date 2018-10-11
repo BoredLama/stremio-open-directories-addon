@@ -2,7 +2,7 @@
 
 Search for HTTP streams on Open Directories with automatic Google searches.
 
-This Add-on requires Stremio v4.4.10+
+**This Add-on requires Stremio v4.4.10+**
 
 Note 1: After running the Stremio Open Directories Add-on for the first time, a `config.json` file will be created in the same folder as the add-on executable. You can edit this file to configure the add-on.
 

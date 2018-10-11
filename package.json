@@ -1,0 +1,21 @@
+{
+  "name": "stremio-open-directories-addon",
+  "version": "1.0.0",
+  "description": "Stremio Add-on to get streaming results from Open Directories",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "build": "pkg index.js --out-path build/ --targets linux-x64,macos-x64,win-x64,linux-x86,macos-x86,win-x86"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "needle": "^2.2.3",
+    "name-to-imdb": "jaruba/name-to-imdb",
+    "video-name-parser": "^1.4.6",
+    "comment-json": "^1.1.3",
+    "google": "^2.1.0",
+    "cheerio": "^0.22.0",
+    "stremio-addon-sdk": "^0.6.1",
+    "http-proxy": "^1.14.0"
+  }
+}

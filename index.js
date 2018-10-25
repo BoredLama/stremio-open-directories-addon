@@ -1,30 +1,21 @@
-const parseTorrent = require('parse-torrent')
+
 const needle = require('needle')
-const async = require('async')
 
-const express = require('express')
-const addon = express()
-
-const jackettApi = require('./jackett')
+const openDirApi = require('./openDirectories')
 const helper = require('./helpers')
 
 const config = require('./config')
 
-const respond = (res, data) => {
-    res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader('Access-Control-Allow-Headers', '*')
-    res.setHeader('Content-Type', 'application/json')
-    res.send(data)
-}
+const pUrl = require('url')
 
 const manifest = { 
-    "id": "org.stremio.jackett",
+    "id": "org.stremio.opendir",
     "version": "1.0.0",
 
-    "name": "Stremio Jackett Addon",
-    "description": "Stremio Add-on to get torrent results from Jackett",
+    "name": "Stremio Open Directories Addon",
+    "description": "Stremio Add-on to get streaming results from Open Directories",
 
-    "icon": "https://static1.squarespace.com/static/55c17e7ae4b08ccd27be814e/t/599b81c32994ca8ff6c1cd37/1508813048508/Jackett-logo-2.jpg",
+    "icon": "https://logopond.com/logos/3290f64e7448ab9cf04239a070a8cc47.png",
 
     // set what type of resources we will return
     "resources": [
@@ -37,50 +28,25 @@ const manifest = {
     // prefix of item IDs (ie: "tt0032138")
     "idPrefixes": [ "tt" ]
 
-};
+}
 
-addon.get('/:jackettKey/manifest.json', (req, res) => {
-    respond(res, manifest)
-})
+const addonSDK = require("stremio-addon-sdk")
+const addon = new addonSDK(manifest)
 
-// utility function to create stream object from magnet or remote torrent
-const streamFromMagnet = (tor, uri, type, cb) => {
-    const toStream = (parsed) => {
-
-        const infoHash = parsed.infoHash.toLowerCase()
-
-        let title = tor.extraTag || parsed.name
-
-        const subtitle = 'Seeds: ' + tor.seeders + ' / Peers: ' + tor.peers
-
-        title += (title.indexOf('\n') > -1 ? '\r\n' : '\r\n\r\n') + subtitle
-
-        cb({
-            name: tor.from,
-            type: type,
-            infoHash: infoHash,
-            sources: (parsed.announce || []).map(x => { return "tracker:"+x }).concat(["dht:"+infoHash]),
-            title: title
-        })
-    }
-    if (uri.startsWith("magnet:?")) {
-        toStream(parseTorrent(uri))
-    } else {
-        parseTorrent.remote(uri, (err, parsed) => {
-          if (err) {
-            cb(false)
-            return
-          }
-          toStream(parsed)
-        })
+const toStream = (newObj, type) => {
+    return {
+        name: pUrl.parse(newObj.href).host,
+        type: type,
+        url: newObj.href,
+        // presume 480p if the filename has no extra tags
+        title: newObj.extraTag || '480p'
     }
 }
 
-// stream response
-addon.get('/:jackettKey/stream/:type/:id.json', (req, res) => {
+addon.defineStreamHandler(function(args, cb) {
 
-    if (!req.params.id || !req.params.jackettKey)
-        return respond(res, { streams: [] })
+    if (!args.id)
+        return cb(null, { streams: [] })
 
     let results = []
 
@@ -95,62 +61,42 @@ addon.get('/:jackettKey/stream/:type/:id.json', (req, res) => {
 
             tempResults = results
 
-            // filter out torrents with less then 3 seeds
-
-            if (config.minimumSeeds)
-                tempResults = tempResults.filter(el => { return !!(el.seeders && el.seeders > config.minimumSeeds -1) })
-
-            // order by seeds desc
-
-            tempResults = tempResults.sort((a, b) => { return a.seeders < b.seeders ? 1 : -1 })
-
-            // limit to 15 results
-
-            if (config.maximumResults)
-                tempResults = tempResults.slice(0, config.maximumResults)
-
             const streams = []
 
-            const q = async.queue((task, callback) => {
-                if (task && (task.magneturl || task.link)) {
-                    const url = task.magneturl || task.link
-                    // jackett links can sometimes redirect to magnet links or torrent files
-                    // we follow the redirect if needed and bring back the direct link
-                    helper.followRedirect(url, url => {
-                        // convert torrents and magnet links to stream object
-                        streamFromMagnet(task, url, req.params.type, stream => {
-                            if (stream)
-                                streams.push(stream)
-                            callback()
-                        })
+            tempResults.forEach(stream => { streams.push(toStream(stream, args.type)) })
+
+            if (streams.length) {
+                if (config.onlyMP4) {
+                    // use proxy to remove CORS
+                    helper.proxify(streams, (err, proxiedStreams) => {
+                        if (!err && proxiedStreams && proxiedStreams.length)
+                            cb(null, { streams: proxiedStreams })
+                        else
+                            cb(null, { streams: streams })
                     })
-                    return
+                } else {
+                    cb(null, { streams: streams })
                 }
-                callback()
-            }, 1)
-
-            q.drain = () => {
-                respond(res, { streams: streams })
+            } else {
+                cb(null, { streams: [] })
             }
-
-            tempResults.forEach(elm => { q.push(elm) })
         } else {
-            respond(res, { streams: [] })
+            cb(null, { streams: [] })
         }
     }
 
-    const idParts = req.params.id.split(':')
+    const idParts = args.id.split(':')
 
     const imdbId = idParts[0]
 
-    needle.get('https://v3-cinemeta.strem.io/meta/' + req.params.type + '/' + imdbId + '.json', (err, resp, body) => {
+    needle.get('https://v3-cinemeta.strem.io/meta/' + args.type + '/' + imdbId + '.json', (err, resp, body) => {
 
         if (body && body.meta && body.meta.name && body.meta.year) {
 
             const searchQuery = {
                 name: body.meta.name,
                 year: body.meta.year,
-                type: req.params.type
+                type: args.type
             }
 
             if (idParts.length == 3) {
@@ -158,7 +104,7 @@ addon.get('/:jackettKey/stream/:type/:id.json', (req, res) => {
                 searchQuery.episode = idParts[2]
             }
 
-            jackettApi.search(req.params.jackettKey, searchQuery,
+            openDirApi.search(searchQuery,
 
                 partialResponse = (tempResults) => {
                     results = results.concat(tempResults)
@@ -180,7 +126,4 @@ addon.get('/:jackettKey/stream/:type/:id.json', (req, res) => {
 
 })
 
-addon.listen(config.addonPort, () => {
-    console.log('Add-on Repository URL: http://127.0.0.1:'+config.addonPort+'/[my-jackett-key]/manifest.json')
-    console.log('Replace "[my-jackett-key]" with your Jackett API Key')
-})
+addon.runHTTPWithOptions({ port: config.addonPort })

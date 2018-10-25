@@ -12,8 +12,8 @@ const defaultConfig = {
 	"// responseTimeout": [["// for stremio add-on, in milliseconds, if timeout is reached it will respond with whatever results it already has, 0 = no timeout"]],
 	"responseTimeout": 11000,
 
-	"// addonPort": [["// port to use for stremio add-on, default is 7000"]],
-	"addonPort": 7003,
+	"// addonPort": [["// port to use for stremio add-on, default is 7005"]],
+	"addonPort": 7005,
 
 	"// googleResults": [["// maximum number of results to parse from Google, default is 25"]],
 	"googleResults": 25,

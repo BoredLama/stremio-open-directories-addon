@@ -6,7 +6,7 @@ Search for HTTP streams on Open Directories with automatic Google searches.
 
 Note 1: After running the Stremio Open Directories Add-on for the first time, a `config.json` file will be created in the same folder as the add-on executable. You can edit this file to configure the add-on.
 
-Note 2: Alternatively, you can also use command line arguments to configure the add-on. `--only-mp4` will make it serve only `.mp4` results (so the add-on can work in the browser, like on [app.strem.io](http://app.strem.io/)), `--google-results=25` to set the number of Google results to parse, default is `25`.
+Note 2: Alternatively, you can also use command line arguments to configure the add-on. `--only-mp4` will make it serve only `.mp4` results (so the add-on can work in the browser, like on [app.strem.io](https://app.strem.io/shell-v4.4/)), `--google-results=25` to set the number of Google results to parse, default is `25`.
 
 Note 3: If you overuse this add-on and make a lot of requests fast, Google can block the add-on from making further requests. This block can last for a few hours but can be bypassed if you go on Google from your browser and solve the captcha.
 

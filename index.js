@@ -1,5 +1,6 @@
 
 const needle = require('needle')
+const getPort = require('get-port')
 
 const openDirApi = require('./openDirectories')
 const helper = require('./helpers')
@@ -133,6 +134,8 @@ if (process && process.argv)
     })
 
 const runAddon = async () => {
+
+    config.addonPort = await getPort({ port: config.addonPort })
 
     addon.runHTTPWithOptions({ port: config.addonPort })
 

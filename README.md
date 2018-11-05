@@ -10,6 +10,7 @@ Note 2: Alternatively, you can also use command line arguments to configure the 
 
 Note 3: If you overuse this add-on and make a lot of requests fast, Google can block the add-on from making further requests. This block can last for a few hours but can be bypassed if you go on Google from your browser and solve the captcha.
 
+Note 4: Run the add-on with `--remote` (or set `remote` to `true` in `config.json`) to also receive an add-on url that will work through LAN and the Internet (instead of just locally).
 
 ## Usage
 
@@ -21,6 +22,6 @@ Note 3: If you overuse this add-on and make a lot of requests fast, Google can b
 
 ### Add Open Directories Add-on to Stremio
 
-Add `http://127.0.0.1:7005/manifest.json` as an Add-on Repository URL in Stremio.
+Add `http://127.0.0.1:7005/manifest.json` as an Add-on URL in Stremio.
 
 ![addlink](https://user-images.githubusercontent.com/1777923/43146711-65a33ccc-8f6a-11e8-978e-4c69640e63e3.png)

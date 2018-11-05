@@ -17,6 +17,7 @@
     "stremio-addon-sdk": "^0.6.1",
     "http-proxy": "^1.14.0",
     "localtunnel": "^1.9.1",
-    "death": "^1.1.0"
+    "death": "^1.1.0",
+    "get-port": "^4.0.0"
   }
 }

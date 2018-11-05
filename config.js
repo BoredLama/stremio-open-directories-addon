@@ -21,6 +21,9 @@ const defaultConfig = {
 	"// onlyMP4": [["// normally, results are chosen with any video extension, set this to true to get only browser supported results"]],
 	"onlyMP4": false,
 
+	"// remote": [["// make add-on available remotely too, through LAN and the Internet"]],
+	"remote": false,
+
 	"page": {
 
 		"// readTimeout": [["// read timeout in milliseconds for http requests to jackett server, 0 = no timeout"]],

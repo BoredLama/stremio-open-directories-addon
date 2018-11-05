@@ -126,4 +126,40 @@ addon.defineStreamHandler(function(args, cb) {
 
 })
 
-addon.runHTTPWithOptions({ port: config.addonPort })
+if (process && process.argv)
+    process.argv.forEach((cmdLineArg) => {
+        if (cmdLineArg == '--remote')
+            config.remote = true
+    })
+
+const runAddon = async () => {
+
+    addon.runHTTPWithOptions({ port: config.addonPort })
+
+    if (config.remote) {
+
+        const localtunnel = require('localtunnel')
+         
+        const tunnel = localtunnel(config.addonPort, function(err, tunnel) {
+
+            if (err) {
+                console.error(err)
+                return
+            }
+
+            console.log('Remote Add-on URL: '+tunnel.url+'/manifest.json')         
+        })
+
+        tunnel.on('close', () => {
+            process.exit()
+        })
+
+        const cleanUp = require('death')({ uncaughtException: true })
+
+        cleanUp((sig, err) => { tunnel.close() })
+         
+    }
+
+}
+
+runAddon()

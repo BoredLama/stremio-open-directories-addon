@@ -1,6 +1,6 @@
 {
   "name": "stremio-open-directories-addon",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Stremio Add-on to get streaming results from Open Directories",
   "main": "index.js",
   "scripts": {

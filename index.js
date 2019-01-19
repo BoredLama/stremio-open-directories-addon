@@ -121,7 +121,7 @@ addon.defineStreamHandler((args, cb) => {
                 setTimeout(respondStreams, config.responseTimeout)
 
         } else {
-            respond(res, { streams: [] })
+            cb(null, { streams: [] })
         }
     })
 

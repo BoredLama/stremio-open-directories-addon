@@ -3,6 +3,7 @@ const needle = require('needle')
 const getPort = require('get-port')
 
 const openDirApi = require('./openDirectories')
+const tunnel = require('./tunnel')
 const helper = require('./helpers')
 
 const config = require('./config')
@@ -141,30 +142,12 @@ const runAddon = async () => {
 
     if (config.remote) {
 
-        const localtunnel = require('localtunnel')
-
         const remoteOpts = {}
 
         if (config.subdomain)
             remoteOpts.subdomain = config.subdomain
 
-        const tunnel = localtunnel(config.addonPort, remoteOpts, (err, tunnel) => {
-
-            if (err) {
-                console.error(err)
-                return
-            }
-
-            console.log('Remote Add-on URL: '+tunnel.url+'/manifest.json')         
-        })
-
-        tunnel.on('close', () => {
-            process.exit()
-        })
-
-        const cleanUp = require('death')({ uncaughtException: true })
-
-        cleanUp((sig, err) => { tunnel.close() })
+        tunnel(config.addonPort, remoteOpts) 
          
     }
 

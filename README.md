@@ -12,6 +12,9 @@ Note 3: If you overuse this add-on and make a lot of requests fast, Google can b
 
 Note 4: Run the add-on with `--remote` (or set `remote` to `true` in `config.json`) to also receive an add-on url that will work through LAN and the Internet (instead of just locally).
 
+Note 5: Setting `autoLaunch` to `true` in `config.json` will make the add-on auto launch on system start-up.
+
+
 ## Usage
 
 

@@ -16,7 +16,7 @@ const pUrl = require('url')
 
 const manifest = { 
     "id": "org.stremio.opendir",
-    "version": "1.0.0",
+    "version": "1.0.5",
 
     "name": "Stremio Open Directories Addon",
     "description": "Stremio Add-on to get streaming results from Open Directories",

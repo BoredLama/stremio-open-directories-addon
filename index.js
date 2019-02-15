@@ -8,6 +8,10 @@ const helper = require('./helpers')
 
 const config = require('./config')
 
+const autoLaunch = require('./autoLaunch')
+
+autoLaunch('Open Directories Add-on', config.autoLaunch)
+
 const pUrl = require('url')
 
 const manifest = { 

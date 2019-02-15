@@ -32,7 +32,9 @@ const manifest = {
     "types": ["movie", "series"],
 
     // prefix of item IDs (ie: "tt0032138")
-    "idPrefixes": [ "tt" ]
+    "idPrefixes": [ "tt" ],
+
+    "catalogs": []
 
 }
 

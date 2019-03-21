@@ -10,13 +10,15 @@ const config = require('./config')
 
 const autoLaunch = require('./autoLaunch')
 
+const version = require('./package.json').version
+
 autoLaunch('Open Directories Add-on', config.autoLaunch)
 
 const pUrl = require('url')
 
 const manifest = { 
     "id": "org.stremio.opendir",
-    "version": "1.0.5",
+    "version": version,
 
     "name": "Stremio Open Directories Addon",
     "description": "Stremio Add-on to get streaming results from Open Directories",
@@ -138,6 +140,11 @@ if (process && process.argv)
     process.argv.forEach((cmdLineArg) => {
         if (cmdLineArg == '--remote')
             config.remote = true
+        else if (cmdLineArg == '-v') {
+            // version check
+            console.log('v' + version)
+            process.exit()
+        }
     })
 
 const runAddon = async () => {
